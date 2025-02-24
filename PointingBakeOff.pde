@@ -17,12 +17,15 @@ int finishTime = 0; //records the time of the final click
 int hits = 0; //number of successful clicks
 int misses = 0; //number of missed clicks
 Robot robot; //initialized in setup 
+float prevMouseX, prevMouseY; //mouse locations for acceleration
+float newX, newY;
+float accelFactor;
 
 int numRepeats = 1; //sets the number of times each button repeats in the test
 
 void setup()
 {
-  size(700, 700); // set the size of the window
+  size(1400, 1400); // set the size of the window
   //noCursor(); //hides the system cursor if you want
   noStroke(); //turn off all strokes, we're just using fills here (can change this if you want)
   textFont(createFont("Arial", 16)); //sets the font to Arial size 16
@@ -49,6 +52,10 @@ void setup()
   System.out.println("trial order: " + trials);
   
   surface.setLocation(0,0);// put window in top left corner of screen (doesn't always work)
+  
+  newX = mouseX;
+  newY = mouseY; // set initial cursor location
+  noCursor();
 }
 
 
@@ -78,8 +85,26 @@ void draw()
   for (int i = 0; i < 16; i++)// for all button
     drawButton(i); //draw button
 
+    
   fill(255, 0, 0, 200); // set fill color to translucent red
-  ellipse(mouseX, mouseY, 20, 20); //draw user cursor as a circle with a diameter of 20
+  accelFactor = 1;
+  for (int i = 0; i < 16; i++) {
+  Rectangle bounds = getButtonLocation(trials.get(i));
+  if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height)) // test to see if hit was within bounds
+  {
+    accelFactor = 0.5;
+  } 
+  }
+  float dx = mouseX - prevMouseX;
+  float dy = mouseY - prevMouseY;
+
+  newX = newX + dx * accelFactor;
+  newY = newY + dy * accelFactor;
+  
+  prevMouseX = mouseX;
+  prevMouseY = mouseY;
+
+  ellipse(newX, newY, 20, 20); //draw user cursor as a circle with a diameter of 20
 }
 
 void mousePressed() // test to see if hit was in target!
@@ -100,7 +125,7 @@ void mousePressed() // test to see if hit was in target!
   Rectangle bounds = getButtonLocation(trials.get(trialNum));
 
  //check to see if mouse cursor is inside button 
-  if ((mouseX > bounds.x && mouseX < bounds.x + bounds.width) && (mouseY > bounds.y && mouseY < bounds.y + bounds.height)) // test to see if hit was within bounds
+  if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height)) // test to see if hit was within bounds
   {
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime)); // success
     hits++; 
@@ -128,14 +153,41 @@ Rectangle getButtonLocation(int i) //for a given button ID, what is its location
 //you can edit this method to change how buttons appear
 void drawButton(int i)
 {
+  int r = 0;
+  int g = 0;
+  int b = 0;
   Rectangle bounds = getButtonLocation(i);
+  
+  if (trials.get(trialNum) == i){ // see if current button is the target
+    r = 0; g = 255; b = 0;
+  }
+  else if (trialNum < 15 && trials.get(trialNum + 1) == i) {
+    fill(255, 255, 120);
+    rect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6); //draw button
+    r = 200; g = 200; b = 200;
+  }
+  else {
+    r = 200; g = 200; b = 200;
+  }
+  
+  if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height))
+  {
+    //drawGradient(bounds.x + bounds.width/2, bounds.y + bounds.height/2, r, g, b);
+    fill(255, 100, 0);
+    rect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
+  }
 
-  if (trials.get(trialNum) == i) // see if current button is the target
-    fill(0, 255, 255); // if so, fill cyan
-  else
-    fill(200); // if not, fill gray
-
+  fill(r, g, b);
   rect(bounds.x, bounds.y, bounds.width, bounds.height); //draw button
+
+}
+
+void drawGradient(float x, float y, int red, int green, int blue) {
+  int radius = buttonSize*2;
+  for (int r = radius; r > 0; --r) {
+    fill(red, green, blue, 255 - (r/8 + 245));
+    square(x - (r/2 + 3), y - (r/2 + 3), r + 6);
+  }
 }
 
 void mouseMoved()
