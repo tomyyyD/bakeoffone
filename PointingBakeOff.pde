@@ -89,11 +89,11 @@ void draw()
   fill(255, 0, 0, 200); // set fill color to translucent red
   accelFactor = 1;
   for (int i = 0; i < 16; i++) {
-  Rectangle bounds = getButtonLocation(trials.get(i));
-  if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height)) // test to see if hit was within bounds
-  {
-    accelFactor = 0.5;
-  } 
+    Rectangle bounds = getButtonLocation(trials.get(i));
+    if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height)) // test to see if hit was within bounds
+    {
+      accelFactor = 0.5;
+    } 
   }
   float dx = mouseX - prevMouseX;
   float dy = mouseY - prevMouseY;
@@ -105,6 +105,12 @@ void draw()
   prevMouseY = mouseY;
 
   ellipse(newX, newY, 20, 20); //draw user cursor as a circle with a diameter of 20
+  
+  Rectangle bounds = getButtonLocation(trials.get(trialNum));
+  stroke(255, 0, 0, 200);
+  strokeWeight(4);
+  line(newX, newY, bounds.x + bounds.width/2, bounds.y + bounds.width/2);
+  strokeWeight(0);
 }
 
 void mousePressed() // test to see if hit was in target!
