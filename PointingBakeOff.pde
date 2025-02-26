@@ -176,12 +176,12 @@ void drawButton(int i)
     r = 200; g = 200; b = 200;
   }
   
-  if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height))
-  {
-    //drawGradient(bounds.x + bounds.width/2, bounds.y + bounds.height/2, r, g, b);
-    fill(255, 100, 0);
-    rect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
-  }
+  //if ((newX > bounds.x && newX < bounds.x + bounds.width) && (newY > bounds.y && newY < bounds.y + bounds.height))
+  //{
+  //  //drawGradient(bounds.x + bounds.width/2, bounds.y + bounds.height/2, r, g, b);
+  //  fill(255, 100, 0);
+  //  rect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
+  //}
 
   fill(r, g, b);
   rect(bounds.x, bounds.y, bounds.width, bounds.height); //draw button
